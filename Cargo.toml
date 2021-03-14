@@ -1,0 +1,11 @@
+[package]
+name = "cloudfront_sign"
+version = "0.1.0"
+authors = ["Peter Evers <pevers90@gmail.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+openssl = { version = "0.10", features = ["vendored"] }
+thiserror = "1.0.24"
