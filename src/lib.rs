@@ -94,7 +94,7 @@ pub fn get_signed_cookie(
     );
     headers.insert(
         String::from("CloudFront-Key-Pair-Id"),
-        normalize_base64(&options.key_pair_id).parse().unwrap(),
+        options.key_pair_id.parse().unwrap(),
     );
 
     Ok(headers)
@@ -143,7 +143,7 @@ pub fn get_signed_url(url: &str, options: &SignedOptions) -> Result<String, Enco
         options.date_less_than,
         normalize_base64(&policy_string),
         normalize_base64(&signature),
-        normalize_base64(&options.key_pair_id)
+        options.key_pair_id
     ))
 }
 

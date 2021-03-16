@@ -17,3 +17,32 @@ $ sudo apt-get install pkg-config libssl-dev
 # Fedora
 $ sudo dnf install pkg-config openssl-devel
 ```
+
+
+## Examples
+
+Getting signed cookies.
+```
+use std::fs;
+use cloudfront_sign::*;
+let private_key = fs::read_to_string("tests/data/private_key.pem").unwrap();
+let options = SignedOptions {
+    key_pair_id: String::from("SOMEKEYPAIRID"),
+    private_key: private_key,
+    ..Default::default()
+};
+let cookies = get_signed_cookie("https://example.com", &options).unwrap();
+```
+
+Getting signed URLS.
+```
+use std::fs;
+use cloudfront_sign::*;
+let private_key = fs::read_to_string("tests/data/private_key.pem").unwrap();
+let options = SignedOptions {
+    key_pair_id: String::from("SOMEKEYPAIRID"),
+    private_key: private_key,
+    ..Default::default()
+};
+let signed_url = get_signed_url("https://example.com", &options).unwrap();
+```
