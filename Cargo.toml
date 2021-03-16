@@ -1,8 +1,9 @@
 [package]
 name = "cloudfront_sign"
 version = "0.1.0"
-authors = ["Peter Evers <pevers90@gmail.com>"]
+authors = ["Peter Evers <peter@promaton.com>"]
 edition = "2018"
+description = "Utility module for AWS CloudFront in Rust"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

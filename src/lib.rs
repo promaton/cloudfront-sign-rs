@@ -139,7 +139,11 @@ pub fn get_signed_url(url: &str, options: &SignedOptions) -> Result<String, Enco
     let policy_string = openssl::base64::encode_block(policy.as_bytes());
     Ok(format!(
         "{}?Expires={}&Policy={}&Signature={}&Key-Pair-Id={}",
-        url, options.date_less_than, policy_string, signature, options.key_pair_id
+        url,
+        options.date_less_than,
+        normalize_base64(&policy_string),
+        normalize_base64(&signature),
+        normalize_base64(&options.key_pair_id)
     ))
 }
 
