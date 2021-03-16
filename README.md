@@ -22,7 +22,7 @@ $ sudo dnf install pkg-config openssl-devel
 ## Examples
 
 Getting signed cookies.
-```
+```rs
 use std::fs;
 use cloudfront_sign::*;
 let private_key = fs::read_to_string("tests/data/private_key.pem").unwrap();
@@ -35,7 +35,7 @@ let cookies = get_signed_cookie("https://example.com", &options).unwrap();
 ```
 
 Getting signed URLS.
-```
+```rs
 use std::fs;
 use cloudfront_sign::*;
 let private_key = fs::read_to_string("tests/data/private_key.pem").unwrap();
