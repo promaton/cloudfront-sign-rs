@@ -216,7 +216,7 @@ mod tests {
             ..Default::default()
         };
         let signed_url = get_signed_url("https://example.com", &options).unwrap();
-        assert_eq!(signed_url, "https://example.com?Expires=200&Policy=eyJTdGF0ZW1lbnQiOlt7IlJlc291cmNlIjoiaHR0cHM6Ly9leGFtcGxlLmNvbSIsIkNvbmRpdGlvbiI6eyJEYXRlTGVzc1RoYW4iOnsiQVdTOkVwb2NoVGltZSI6MjAwfX19XX0=&Signature=Apw4PuuH0C5xnrZn8pU7JJk14JPRaNXLnJwmv6SL6RMC51qP2OxbYZxdDUyGW7+5EJ8hNIHObmaDlW0cUg6wocq1YOoqzMs1hFYTQbmhJc8wsjd/HCgiaI0oryb1oL/hDAQq22Ndl+5ue8OUeZxDJVFE0GAIpji/ubfmr2GV5ybEXQLWKWSh7k0wr5h27jt+QNDmQAlI3unPI5TiL3k9eZ+yl7G9jvzz3T3DsJgOb1TRqzyNx34smafA1En0dvrAAGRGbJVgD8vKDBJNnU8DqNho56w4Li2+pNLZHzfi2wa1gNb8+Dg5rpqBtpO0sf6d4gOD1oQYRRuYHYOBm7T4zw==&Key-Pair-Id=SOMEKEYPAIRID");
+        assert_eq!(signed_url, "https://example.com?Expires=200&Policy=eyJTdGF0ZW1lbnQiOlt7IlJlc291cmNlIjoiaHR0cHM6Ly9leGFtcGxlLmNvbSIsIkNvbmRpdGlvbiI6eyJEYXRlTGVzc1RoYW4iOnsiQVdTOkVwb2NoVGltZSI6MjAwfX19XX0_&Signature=Apw4PuuH0C5xnrZn8pU7JJk14JPRaNXLnJwmv6SL6RMC51qP2OxbYZxdDUyGW7-5EJ8hNIHObmaDlW0cUg6wocq1YOoqzMs1hFYTQbmhJc8wsjd~HCgiaI0oryb1oL~hDAQq22Ndl-5ue8OUeZxDJVFE0GAIpji~ubfmr2GV5ybEXQLWKWSh7k0wr5h27jt-QNDmQAlI3unPI5TiL3k9eZ-yl7G9jvzz3T3DsJgOb1TRqzyNx34smafA1En0dvrAAGRGbJVgD8vKDBJNnU8DqNho56w4Li2-pNLZHzfi2wa1gNb8-Dg5rpqBtpO0sf6d4gOD1oQYRRuYHYOBm7T4zw__&Key-Pair-Id=SOMEKEYPAIRID");
     }
 
     #[test]
