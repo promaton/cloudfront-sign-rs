@@ -4,6 +4,11 @@ version = "0.1.0"
 authors = ["Peter Evers <peter@promaton.com>"]
 edition = "2018"
 description = "Utility module for AWS CloudFront in Rust"
+homepage = "https://www.promaton.com"
+license = "MIT"
+keywords = ["aws", "cloudfront", "signed-url", "signed-cookie"]
+repository = "https://github.com/promaton/cloudfront-sign-rs"
+readme = "README.md"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
