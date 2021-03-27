@@ -1,9 +1,9 @@
 [package]
 name = "cloudfront_sign"
-version = "0.1.1"
+version = "0.1.2"
 authors = ["Peter Evers <peter@promaton.com>"]
 edition = "2018"
-description = "Utility module for AWS CloudFront in Rust"
+description = "Utility module for AWS CloudFront to generate signed URLs and cookies"
 homepage = "https://www.promaton.com"
 license = "MIT"
 keywords = ["aws", "cloudfront", "signed-url", "signed-cookie"]
