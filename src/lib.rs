@@ -112,7 +112,7 @@ fn create_policy_signature(policy: &str, private_key: &str) -> Result<String, En
 /// Create a URL safe Base64 encoded string.
 /// See: http://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-creating-signed-url-canned-policy.html
 fn normalize_base64(input: &str) -> String {
-    input.replace("+", "-").replace("=", "_").replace("/", "~")
+    input.replace('+', "-").replace('=', "_").replace('/', "~")
 }
 
 /// Get a CloudFront signed URL
@@ -137,9 +137,11 @@ pub fn get_signed_url(url: &str, options: &SignedOptions) -> Result<String, Enco
     let policy = get_custom_policy(url, options);
     let signature = create_policy_signature(&policy, &options.private_key)?;
     let policy_string = openssl::base64::encode_block(policy.as_bytes());
+    let separator = if url.contains('?') { '&' } else { '?' };
     Ok(format!(
-        "{}?Expires={}&Policy={}&Signature={}&Key-Pair-Id={}",
+        "{}{}Expires={}&Policy={}&Signature={}&Key-Pair-Id={}",
         url,
+        separator,
         options.date_less_than,
         normalize_base64(&policy_string),
         normalize_base64(&signature),
@@ -165,7 +167,7 @@ mod tests {
         let date_less_than: u64 = 1;
         let options = SignedOptions {
             key_pair_id: String::from("SOMEKEYPAIRID"),
-            private_key: private_key,
+            private_key,
             date_less_than,
             ..Default::default()
         };
@@ -180,7 +182,7 @@ mod tests {
         let date_greater_than = Some(20);
         let options = SignedOptions {
             key_pair_id: String::from("SOMEKEYPAIRID"),
-            private_key: private_key,
+            private_key,
             date_less_than,
             date_greater_than,
             ..Default::default()
@@ -196,7 +198,7 @@ mod tests {
         let ip_address = Some(String::from("192.0.2.0/24"));
         let options = SignedOptions {
             key_pair_id: String::from("SOMEKEYPAIRID"),
-            private_key: private_key,
+            private_key,
             date_less_than,
             ip_address,
             ..Default::default()
@@ -206,12 +208,26 @@ mod tests {
     }
 
     #[test]
+    fn test_create_signed_url_with_query() {
+        let private_key = fs::read_to_string("tests/data/private_key.pem").unwrap();
+        let date_less_than: u64 = 200;
+        let options = SignedOptions {
+            key_pair_id: String::from("SOMEKEYPAIRID"),
+            private_key,
+            date_less_than,
+            ..Default::default()
+        };
+        let signed_url = get_signed_url("https://example.com?a=b", &options).unwrap();
+        assert_eq!(signed_url, "https://example.com?a=b&Expires=200&Policy=eyJTdGF0ZW1lbnQiOlt7IlJlc291cmNlIjoiaHR0cHM6Ly9leGFtcGxlLmNvbT9hPWIiLCJDb25kaXRpb24iOnsiRGF0ZUxlc3NUaGFuIjp7IkFXUzpFcG9jaFRpbWUiOjIwMH19fV19&Signature=qGmt6kxwZVt6kjJWhDQlUr6Q71dkd7JrWb9x1Von71pTNA-WzHbgjd3FpqyEvugBm37aacqtYLsuHG75AkFyqA2ndQtRDpQEE0MAylbnZMI7o~wWVFs4WjvFmwP~-ZazTFnnMRp7tBA1g0If4BDi39EHYQlHIyQNf3GmQp0yD~tpgfbSANr8fqiJDNzB7GmQTgeBvNjnwKOB0h3CwptAYDfieRDyJxS5vFARGBGdXlPHVA0M7SYlxdYPieRp58XAuTY6jtWO5VC3~3beUM~J-DgQ6uXqGCahoxFOhK2QpcBGgKHFBnknzsbXMerEeQpLx4J77Ky1-LGi6lC0o4mqNQ__&Key-Pair-Id=SOMEKEYPAIRID");
+    }
+
+    #[test]
     fn test_create_signed_url() {
         let private_key = fs::read_to_string("tests/data/private_key.pem").unwrap();
         let date_less_than: u64 = 200;
         let options = SignedOptions {
             key_pair_id: String::from("SOMEKEYPAIRID"),
-            private_key: private_key,
+            private_key,
             date_less_than,
             ..Default::default()
         };
@@ -225,7 +241,7 @@ mod tests {
         let date_less_than: u64 = 200;
         let options = SignedOptions {
             key_pair_id: String::from("SOMEKEYPAIRID"),
-            private_key: private_key,
+            private_key,
             date_less_than,
             ..Default::default()
         };
