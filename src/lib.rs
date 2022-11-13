@@ -141,11 +141,12 @@ pub fn get_signed_url(url: &str, options: &SignedOptions) -> Result<String, Enco
 
     if options.date_greater_than.is_some() || options.ip_address.is_some() {
         let policy_string = openssl::base64::encode_block(policy.as_bytes());
-
+        let separator = if url.contains('?') { '&' } else { '?' };
         Ok(format!(
-            "{}{}Policy={}&Signature={}&Key-Pair-Id={}",
+            "{}{}Expires={}&Policy={}&Signature={}&Key-Pair-Id={}",
             url,
             separator,
+            options.date_less_than,
             normalize_base64(&policy_string),
             normalize_base64(&signature),
             options.key_pair_id
@@ -221,20 +222,6 @@ mod tests {
     }
 
     #[test]
-    fn test_create_signed_url_with_query() {
-        let private_key = fs::read_to_string("tests/data/private_key.pem").unwrap();
-        let date_less_than: u64 = 200;
-        let options = SignedOptions {
-            key_pair_id: String::from("SOMEKEYPAIRID"),
-            private_key,
-            date_less_than,
-            ..Default::default()
-        };
-        let signed_url = get_signed_url("https://example.com?a=b", &options).unwrap();
-        assert_eq!(signed_url, "https://example.com?a=b&Expires=200&Signature=qGmt6kxwZVt6kjJWhDQlUr6Q71dkd7JrWb9x1Von71pTNA-WzHbgjd3FpqyEvugBm37aacqtYLsuHG75AkFyqA2ndQtRDpQEE0MAylbnZMI7o~wWVFs4WjvFmwP~-ZazTFnnMRp7tBA1g0If4BDi39EHYQlHIyQNf3GmQp0yD~tpgfbSANr8fqiJDNzB7GmQTgeBvNjnwKOB0h3CwptAYDfieRDyJxS5vFARGBGdXlPHVA0M7SYlxdYPieRp58XAuTY6jtWO5VC3~3beUM~J-DgQ6uXqGCahoxFOhK2QpcBGgKHFBnknzsbXMerEeQpLx4J77Ky1-LGi6lC0o4mqNQ__&Key-Pair-Id=SOMEKEYPAIRID");
-    }
-
-    #[test]
     fn test_create_signed_url() {
         let private_key = fs::read_to_string("tests/data/private_key.pem").unwrap();
         let date_less_than: u64 = 200;
@@ -246,6 +233,20 @@ mod tests {
         };
         let signed_url = get_signed_url("https://example.com", &options).unwrap();
         assert_eq!(signed_url, "https://example.com?Expires=200&Signature=Apw4PuuH0C5xnrZn8pU7JJk14JPRaNXLnJwmv6SL6RMC51qP2OxbYZxdDUyGW7-5EJ8hNIHObmaDlW0cUg6wocq1YOoqzMs1hFYTQbmhJc8wsjd~HCgiaI0oryb1oL~hDAQq22Ndl-5ue8OUeZxDJVFE0GAIpji~ubfmr2GV5ybEXQLWKWSh7k0wr5h27jt-QNDmQAlI3unPI5TiL3k9eZ-yl7G9jvzz3T3DsJgOb1TRqzyNx34smafA1En0dvrAAGRGbJVgD8vKDBJNnU8DqNho56w4Li2-pNLZHzfi2wa1gNb8-Dg5rpqBtpO0sf6d4gOD1oQYRRuYHYOBm7T4zw__&Key-Pair-Id=SOMEKEYPAIRID");
+    }
+
+    #[test]
+    fn test_create_signed_url_with_query() {
+        let private_key = fs::read_to_string("tests/data/private_key.pem").unwrap();
+        let date_less_than: u64 = 200;
+        let options = SignedOptions {
+            key_pair_id: String::from("SOMEKEYPAIRID"),
+            private_key,
+            date_less_than,
+            ..Default::default()
+        };
+        let signed_url = get_signed_url("https://example.com?a=b", &options).unwrap();
+        assert_eq!(signed_url, "https://example.com?a=b&Expires=200&Signature=qGmt6kxwZVt6kjJWhDQlUr6Q71dkd7JrWb9x1Von71pTNA-WzHbgjd3FpqyEvugBm37aacqtYLsuHG75AkFyqA2ndQtRDpQEE0MAylbnZMI7o~wWVFs4WjvFmwP~-ZazTFnnMRp7tBA1g0If4BDi39EHYQlHIyQNf3GmQp0yD~tpgfbSANr8fqiJDNzB7GmQTgeBvNjnwKOB0h3CwptAYDfieRDyJxS5vFARGBGdXlPHVA0M7SYlxdYPieRp58XAuTY6jtWO5VC3~3beUM~J-DgQ6uXqGCahoxFOhK2QpcBGgKHFBnknzsbXMerEeQpLx4J77Ky1-LGi6lC0o4mqNQ__&Key-Pair-Id=SOMEKEYPAIRID");
     }
 
     #[test]
