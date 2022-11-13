@@ -141,7 +141,7 @@ pub fn get_signed_url(url: &str, options: &SignedOptions) -> Result<String, Enco
 
     if options.date_greater_than.is_some() || options.ip_address.is_some() {
         let policy_string = openssl::base64::encode_block(policy.as_bytes());
-        let separator = if url.contains('?') { '&' } else { '?' };
+
         Ok(format!(
             "{}{}Expires={}&Policy={}&Signature={}&Key-Pair-Id={}",
             url,
