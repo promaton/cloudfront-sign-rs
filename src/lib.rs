@@ -1,16 +1,18 @@
-use openssl::{error::ErrorStack, hash::MessageDigest, pkey::PKey, rsa::Rsa, sign::Signer};
-use std::{
-    collections::HashMap,
-    time::{SystemTime, UNIX_EPOCH},
-    u64,
-};
+use std::collections::HashMap;
+use std::time::{SystemTime, UNIX_EPOCH};
+
+use base64::{engine::general_purpose::STANDARD, Engine};
+use rsa::pkcs1::DecodeRsaPrivateKey;
+use sha1::{Digest, Sha1};
 use thiserror::Error;
 
 /// Possible errors encoding signed CloudFront URLS
 #[derive(Error, Debug)]
 pub enum EncodingError {
     #[error("invalid key provided")]
-    InvalidKeyError(#[from] ErrorStack),
+    InvalidKeyError(#[from] rsa::pkcs1::Error),
+    #[error("failed to sign sha1 digest with rsa")]
+    RsaError(#[from] rsa::Error),
     #[error("unknown error")]
     Unknown,
 }
@@ -82,7 +84,7 @@ pub fn get_signed_cookie(
     let mut headers: HashMap<String, String> = HashMap::new();
     let policy = get_custom_policy(url, options);
     let signature = create_policy_signature(&policy, &options.private_key)?;
-    let policy_string = openssl::base64::encode_block(policy.as_bytes());
+    let policy_string = STANDARD.encode(policy.as_bytes());
 
     headers.insert(
         String::from("CloudFront-Policy"),
@@ -102,11 +104,17 @@ pub fn get_signed_cookie(
 
 /// Create signature for a given policy and private key PEM-encoded PKCS#1
 fn create_policy_signature(policy: &str, private_key: &str) -> Result<String, EncodingError> {
-    let rsa = Rsa::private_key_from_pem(private_key.as_bytes())?;
-    let keypair = PKey::from_rsa(rsa)?;
-    let mut signer = Signer::new(MessageDigest::sha1(), &keypair)?;
-    signer.update(policy.as_bytes())?;
-    Ok(openssl::base64::encode_block(&signer.sign_to_vec()?))
+    let rsa = rsa::RsaPrivateKey::from_pkcs1_pem(private_key)?;
+
+    let sha1_digest = {
+        let mut hasher = Sha1::new();
+        hasher.update(policy.as_bytes());
+        hasher.finalize()
+    };
+
+    let signed = rsa.sign(rsa::Pkcs1v15Sign::new::<Sha1>(), &sha1_digest)?;
+
+    Ok(STANDARD.encode(signed))
 }
 
 /// Create a URL safe Base64 encoded string.
@@ -140,7 +148,7 @@ pub fn get_signed_url(url: &str, options: &SignedOptions) -> Result<String, Enco
     let signature = create_policy_signature(&policy, &options.private_key)?;
 
     if options.date_greater_than.is_some() || options.ip_address.is_some() {
-        let policy_string = openssl::base64::encode_block(policy.as_bytes());
+        let policy_string = STANDARD.encode(policy.as_bytes());
 
         Ok(format!(
             "{}{}Expires={}&Policy={}&Signature={}&Key-Pair-Id={}",
