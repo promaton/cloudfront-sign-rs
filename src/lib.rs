@@ -42,7 +42,7 @@ impl<'a> Default for SignedOptions<'a> {
     }
 }
 
-impl<'a> SignedOptions<'a> {
+impl SignedOptions<'_> {
     /// Extracts the owned data.
     #[inline]
     pub fn into_owned(self) -> SignedOptions<'static> {
