@@ -1,5 +1,5 @@
-use std::collections::HashMap;
 use std::borrow::Cow;
+use std::collections::HashMap;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 use base64::{engine::general_purpose::STANDARD, Engine};
@@ -21,9 +21,9 @@ pub enum EncodingError {
 /// Options for getting a signed cookie from CloudFront
 pub struct SignedOptions<'a> {
     pub key_pair_id: Cow<'a, str>,        // The access ID from CloudFront.
-    pub private_key: Cow<'a, str>,        // The private key for your CloudFront key_pair_id as PEM-encoded PKCS#1.
-    pub date_less_than: u64,              // The expiration date and time for the URL in Unix time format (in seconds) and Coordinated Universal Time (UTC). Defaults to 1800s from now.
-    pub date_greater_than: Option<u64>,   // An optional start date and time for the URL in Unix time format (in seconds) and Coordinated Universal Time (UTC).
+    pub private_key: Cow<'a, str>, // The private key for your CloudFront key_pair_id as PEM-encoded PKCS#1.
+    pub date_less_than: u64, // The expiration date and time for the URL in Unix time format (in seconds) and Coordinated Universal Time (UTC). Defaults to 1800s from now.
+    pub date_greater_than: Option<u64>, // An optional start date and time for the URL in Unix time format (in seconds) and Coordinated Universal Time (UTC).
     pub ip_address: Option<Cow<'a, str>>, // An optional IP address of the client making the GET request (can be a range).
     pub resource: Option<Cow<'a, str>>,   // The resource to be accessed.
 }
@@ -65,10 +65,7 @@ impl<'a> SignedOptions<'a> {
 /// Create a custom policy valid until a unix timestamp (s)
 /// https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-setting-signed-cookie-custom-policy.html
 fn get_custom_policy(url: &str, options: &SignedOptions) -> String {
-    let resource = options
-        .resource
-        .clone()
-        .unwrap_or(Cow::from(url));
+    let resource = options.resource.clone().unwrap_or(Cow::from(url));
 
     let date_greater_than = options
         .date_greater_than
@@ -312,7 +309,8 @@ mod tests {
             resource: Some(Cow::from("https://*.example.com/test/*")),
             ..Default::default()
         };
-        let signed_url = get_signed_url("https://test.example.com/test/data?a=b", &options).unwrap();
+        let signed_url =
+            get_signed_url("https://test.example.com/test/data?a=b", &options).unwrap();
         assert_eq!(signed_url, "https://test.example.com/test/data?a=b&Expires=200&Signature=M5iuyWSnPX0A79jCT8tlbEQoLlQL8WSTAPeZb8mHhIVwhJvW7HRgl3r~ZNLg8~g7YcYn683vZ7-9sBcU3FYCDVY~fUgoC-i5xth7wCYGQ9xCxjaUiQlM6N~NfU8dN0Qj-hNZasZN6IKDE3e9dwaUZ9E5MHCPyN~L3fPYwfm6KWsrNXbE4udWdkjzj1mjE5YvMzAWUnwe7Z6MciuZX~LT8u95OEsWA1ZXbyxhpPIDs2SXB07oKC0x~5HncpOMzTglFGmSoGMVytJtE2N3jgS4ecEJQ9d9vzYKlCfR1RH8N~aw0TC4pVG4~R9i2qzGGt53DBJxdrecQOdcSdwwy8grOg__&Key-Pair-Id=SOMEKEYPAIRID");
     }
 
