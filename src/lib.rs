@@ -93,6 +93,7 @@ fn get_custom_policy(url: &str, options: &SignedOptions) -> String {
 /// # Examples
 /// ```
 /// use std::fs;
+/// use std::borrow::Cow;
 /// use cloudfront_sign::*;
 /// let private_key = fs::read_to_string("tests/data/private_key.pem").unwrap();
 /// let options = SignedOptions {
@@ -156,6 +157,7 @@ fn normalize_base64(input: &str) -> String {
 ///
 /// # Examples
 /// ```
+/// use std::borrow::Cow;
 /// use std::fs;
 /// use cloudfront_sign::*;
 /// let private_key = fs::read_to_string("tests/data/private_key.pem").unwrap();
